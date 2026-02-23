@@ -5,13 +5,13 @@ import { DashboardMyActions } from '../utils/constants/constant';
 export class DashboardPage extends BasePage{
 
      getLeaveRequestToApprove(): Locator {
-        return this.getElementByText(DashboardMyActions.leaveRequestToApprove);
+        return this.getElementByText('p', DashboardMyActions.leaveRequestToApprove);
     }
 
       getPendingSelfReview(): Locator {
-        return this.getElementByText(DashboardMyActions.pendingSelfReview);}
+        return this.getElementByText('p',DashboardMyActions.pendingSelfReview);}
     
     getCandidateToInterview(): Locator {
-        return this.getElementByText(DashboardMyActions.candidateToInterview);
+        return this.getElementByText('p', DashboardMyActions.candidateToInterview);
     }
 }

@@ -23,7 +23,12 @@ export class LoginPage extends BasePage{
         await this.fillInput(this.passwordInput, password);
         await this.findElementAndClick(this.loginButton);
     
-   } 
+   }
+
+   async loginAndVerifyUrl(username: string, password: string, expectedUrl: string) {
+        await this.userLogin(username, password);
+        await this.checkingNewUrl(expectedUrl);
+   }
 
    async verifyErrorMessage(expectedMessage: string) {
     await test.step('Verify error message is displayed', async () => {

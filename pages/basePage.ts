@@ -14,16 +14,13 @@ export class BasePage {
      * @param locator - The selector string to locate the element.
     */
     async findElementAndClick (locator: Locator, options?: { timeout?: number }) {
-        const timeout = options?.timeout ?? 5000;
-
-        await test.step(`Click on element: ${locator}`, async () => {
-            try  {
-                await locator.click({timeout});
-            } catch (error) {
-                await this.page.screenshot({ path: `error-${Date.now()}.png` });
-                throw error
-            }
-        });
+        const timeout = options?.timeout ?? 10000; // Default timeout of 10 seconds
+        try  {
+            await locator.click({timeout});
+        } catch (error) {
+            await this.page.screenshot({ path: `error-${Date.now()}.png` });
+            throw error
+        }
     }
     
     /**
@@ -49,11 +46,14 @@ export class BasePage {
         await expect(this.page).toHaveURL(path);
     }
 
-   getElementByText(text: string): Locator {
-      return this.page.locator('p', { hasText: text });
+   getElementByText(element_name: string, text: string): Locator {
+      return this.page.locator(element_name, { hasText: text });
    }
 
-    async clickMenu(options: { text?: string; href?: string }, expectedUrl: string) {
+    async clickMenu(options: { text?: string; href?: string }, 
+                    expectedUrl: string, 
+                    elementToWait: Locator) {
+
         if (!options.href && !options.text) {
             throw new Error('You must provide either text or href to clickMenu');
         }
@@ -67,8 +67,11 @@ export class BasePage {
             ? this.page.locator(selector, { hasText: options.text })
             : this.page.locator(selector);
 
-        await locator.click();
-        await this.checkingNewUrl(expectedUrl);
+        await Promise.all([
+            locator.click(),
+            this.checkingNewUrl(expectedUrl),
+            this.waitElementIsVisible(elementToWait)
+        ]);
     }
 
 }

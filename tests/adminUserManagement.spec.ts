@@ -9,7 +9,10 @@ test.describe('verify user management page', () => {
             adminCredentials.password,
             adminCredentials.expectedPath);
         
-        await factory.clickMenu({ text: NAVBAR_LINKS[0].text }, NAVBAR_LINKS[0].path);
+        await factory.clickMenu({ text: NAVBAR_LINKS[0].text}, 
+            NAVBAR_LINKS[0].path, 
+            factory.userManagementPage.navbarItems.first());
+            
         await factory.userManagementPage.verifyNavbarLinks();
  });
 
