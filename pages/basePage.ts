@@ -3,9 +3,11 @@ import { test } from '@playwright/test';
 
 export class BasePage {
     protected page: Page;
+    readonly formLabels: Locator;
 
     constructor(page: Page) {
         this.page = page;
+        this.formLabels = this.page.locator('form .oxd-label');
     }
 
     /**
@@ -28,7 +30,7 @@ export class BasePage {
     * @param element - The Locator instance of the element to check.
     */
     async waitElementIsVisible (element: Locator) {
-        await expect(element).toBeVisible({ timeout: 5000 })
+        await expect(element).toBeVisible({ timeout: 10000 })
               .catch(() => { throw new Error(`Error: ${element} not found!`) });
     }
 
@@ -68,12 +70,28 @@ export class BasePage {
             : this.page.locator(selector);
 
         await Promise.all([
-            locator.click(),
+            this.findElementAndClick(locator),
             this.checkingNewUrl(expectedUrl),
             this.waitElementIsVisible(elementToWait)
         ]);
     }
 
+    async expectElementToHaveCSS(locator: Locator, property: string, value: string) {
+        try {
+            await expect(locator).toHaveCSS(property, value);
+        } catch (error) {
+            await this.page.screenshot({ path: `css-error-${Date.now()}.png` });
+            throw error;
+        }
+    }
+
+    async verifyTextExistsInContainer(container: Locator, elements: string[]) {
+        for (const element of elements) {
+        await expect(
+            container.getByText(element, { exact: true })
+            ).toBeVisible();
+        }
+    }
 }
 
 export function step(stepName?: string) {

@@ -31,6 +31,7 @@ export default defineConfig({
       args: ["--start-maximized"]
     },
     headless: false,
+    viewport: null,
     ...devices['Desktop Chrome'], 
     channel: 'chrome', 
     baseURL: "https://opensource-demo.orangehrmlive.com",

@@ -1,5 +1,10 @@
 const INDEX = "/web/index.php"
 
+export const FORM_TITLE_COLOR = 'rgb(100, 114, 140)'
+export const DEFAULTCOLOR = 'rgb(255, 123, 29)'
+export const RESET_BUTTON_COLOR = 'rgb(118, 188, 33)'
+export const SEARCH_BUTTON_FONT_COLOR = 'rgb(255, 255, 255)'
+
 export const DashboardMyActions = {
     leaveRequestToApprove: 'Leave Request to Approve',
     pendingSelfReview: 'Pending Self Review',
