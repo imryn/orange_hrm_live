@@ -1,7 +1,8 @@
 import { Locator, Page } from '@playwright/test';
 import { BasePage } from '../pages/basePage';
 import { RESET_BUTTON_COLOR, SEARCH_BUTTON_FONT_COLOR } from '../utils/constants/constant';
-import { FormDataFields } from '../types/FormTypes';
+import { FormField } from '../types/FormTypes';
+
 
 export class FormComponent extends BasePage {
   readonly form: Locator;
@@ -27,57 +28,56 @@ export class FormComponent extends BasePage {
     await this.expectElementToHaveCSS(this.searchButton, 'color', SEARCH_BUTTON_FONT_COLOR);
   }
 
+ // Inside your FormComponent class
+  async fillForm(fields: FormField[]) {
+    for (const field of fields) {
+        // 1. Find the container for this specific form group
+        const group = this.page.locator('.oxd-input-group').filter({ hasText: field.label });
+        const input = group.locator('input');
 
-  async fillForm(data: FormDataFields) {
-  /**
-   * Fill an entire form dynamically.
-   *
-   * @param data - object with keys as labels and values to fill
-   */
+        switch (field.type) {
+            case 'autocomplete':
+                // Click and Type to trigger the search
+                await this.findElementAndClick(input);
+                await input.fill(''); 
+                await input.pressSequentially(field.value, { delay: 150 });
 
-  const fields: Locator = this.page.locator(".oxd-input-group");
-  const count = await fields.count();
+                // Find the result in the dropdown that matches the text
+                // We use a broader selector for the dropdown list to work across pages
+                const listbox = this.page.locator('[role="listbox"], .oxd-autocomplete-dropdown');
+                await this.waitForElement(listbox);
 
-  for (let i = 0; i < count; i++) {
-    const field = fields.nth(i);
+                const result = listbox.locator('div, [role="option"]')
+                    .filter({ hasText: field.value })
+                    .first();
 
-    // Get label
-    const labelLocator = field.locator(".oxd-input-group__label-wrapper");
-    const labelCount = await labelLocator.count();
-    if (labelCount === 0) continue;
+                await this.waitForElement(result)
+                await this.findElementAndClick(result);
+                break;
 
-    const label = (await labelLocator.innerText()).trim();
+            case 'dropdown':
+                // Standard OrangeHRM dropdown logic
+                await group.locator('.oxd-select-text').click();
+                const option = this.page.getByRole('option', { name: field.value, exact: true });
+                await this.waitForElement(option)
+                await this.findElementAndClick(option);
+                break;
 
-    // Skip fields not in data
-    if (!(label in data)) continue;
-
-    const value = data[label];
-
-    // Detect input
-    const inputEl = field.locator("input.oxd-input:visible");
-    if ((await inputEl.count()) > 0) {
-      await inputEl.fill(value);
-      continue;
-    }
-
-    // Detect select
-    const selectEl = field.locator(".oxd-select-text-input:visible");
-    if ((await selectEl.count()) > 0) {
-      await selectEl.click();
-
-      // Correct filter syntax with exact match
-      const options = this.page.locator("div[role='option']").filter({
-        hasText: new RegExp(`^${value}$`), // exact match
-      });
-
-      const optionCount = await options.count();
-      if (optionCount === 0) {
-        throw new Error(`Option '${value}' not found`);
-      }
-
-      await options.first().click(); 
-
+            default:
+                // Default 'input' behavior
+                await this.fillInput(input, field.value);
+                break;
+        }
     }
   }
- }
+
+  async clickSearch() {
+    await this.findElementAndClick(this.searchButton)
+  }
+
+  async searchForUser(fields: FormField[]) {
+    await this.fillForm(fields);
+    await this.clickSearch();
+  }
+
 }

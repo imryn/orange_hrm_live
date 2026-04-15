@@ -1,11 +1,15 @@
-import { FormDataFields } from "../../types/FormTypes";
+import { FormField } from "../../types/FormTypes";
 
-export const ADMIN_USER_FORM: FormDataFields = {
-  "Username": "Paul.Collings",
-  "User Role": "ESS",
-  "Employee Name": "Paul Collings",
-  "Status": "Enabled"
-};
+export const NOT_EXIST_ADMIN_USER: FormField[] = [
+  {label: "Username", value: "ABC Test 1"},
+  {label: "User Role", value: "Admin", type: 'dropdown'},
+  {label: "Status", value: "Enabled", type: 'dropdown'},
+];
+
+export const EXIST_ADMIN_USER: FormField[] = [
+  {label: "Username", value: "Admin"},
+  {label: "User Role", value: "Admin", type: 'dropdown'},
+];
 
 export const NAVBAR_LINKS: string[] = [
     'User Management',

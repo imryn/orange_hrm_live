@@ -4,10 +4,14 @@ import { test } from '@playwright/test';
 export class BasePage {
     protected page: Page;
     readonly formLabels: Locator;
+    readonly spanElement: string;
+    readonly tableContainer: string;
 
     constructor(page: Page) {
         this.page = page;
         this.formLabels = this.page.locator('form .oxd-label');
+        this.spanElement = 'span';
+        this.tableContainer = '.orangehrm-horizontal-padding'
     }
 
     /**
@@ -83,6 +87,10 @@ export class BasePage {
             await this.page.screenshot({ path: `css-error-${Date.now()}.png` });
             throw error;
         }
+    }
+
+    async waitForElement(locator: Locator) {
+       await locator.waitFor({ state: 'visible' });
     }
 
     async verifyTextExistsInContainer(container: Locator, elements: string[]) {

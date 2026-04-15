@@ -60,15 +60,22 @@ export default defineConfig({
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
     {
+      name: 'setup',
+      testMatch: /auth.setup.ts/,
+      use: { storageState: { cookies: [], origins: [] } },
+    },
+    {
       name: 'Google Chrome',
+      dependencies: ['setup'],
       use: { 
         ...devices['Desktop Chrome'], 
         channel: 'chrome', 
         headless: false,
-        baseURL: "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
         screenshot: 'only-on-failure',
         trace: 'retain-on-failure',
+        storageState: 'auth.json',
       },
+      
     },
   ],
 

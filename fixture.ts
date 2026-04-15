@@ -10,7 +10,6 @@ export const test = base.extend<{
     }>({
     factory: 
         async ({ page }, use) => {
-        await page.goto('/web/index.php/auth/login');
         const factory = new PageFactory(page);
         await use(factory);
     },

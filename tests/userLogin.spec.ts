@@ -1,6 +1,11 @@
 import { test } from '../fixture';
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 test.describe('login with user', () => {
+       test.beforeEach(async ({ page }) => {
+           await page.goto('/web/index.php/auth/login');
+      });
 
  test('login with invalid pasword', async ({ factory }) => {
 

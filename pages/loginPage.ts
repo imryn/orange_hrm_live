@@ -28,16 +28,14 @@ export class LoginPage extends BasePage{
    async loginAndVerifyUrl(username: string, password: string, expectedUrl: string) {
         await this.userLogin(username, password);
         await this.checkingNewUrl(expectedUrl);
+        await this.page.context().storageState({ path: 'auth.json' });
    }
 
    async verifyErrorMessage(expectedMessage: string) {
-    await test.step('Verify error message is displayed', async () => {
         await this.waitElementIsVisible(this.errorMessage);
         const actualMessage = await this.errorMessage.textContent();
         if (actualMessage?.trim() !== expectedMessage) {
             throw new Error(`Expected error message: "${expectedMessage}", but got: "${actualMessage?.trim()}"`);
         }
-    });
-        
   }
 }
