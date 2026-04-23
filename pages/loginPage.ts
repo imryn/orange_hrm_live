@@ -27,6 +27,7 @@ export class LoginPage extends BasePage{
 
    async loginAndVerifyUrl(username: string, password: string, expectedUrl: string) {
         await this.userLogin(username, password);
+        await this.waitForUrlToChange(expectedUrl);
         await this.checkingNewUrl(expectedUrl);
         await this.page.context().storageState({ path: 'auth.json' });
    }

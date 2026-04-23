@@ -8,12 +8,16 @@ export class FormComponent extends BasePage {
   readonly form: Locator;
   protected resetButton: Locator;
   protected searchButton: Locator;
+  protected formGroup: Locator;
+  protected formLabel: Locator;
 
   constructor(page: Page, formSelector: string = '.oxd-form') {
     super(page); // BasePage constructor
     this.form = page.locator(formSelector);
-    this.resetButton = this.form.getByRole('button', { name: 'Reset' });
-    this.searchButton = this.form.getByRole('button', { name: 'Search' });
+    this.resetButton = this.getButtonByName('Reset', this.form);
+    this.searchButton = this.getButtonByName('Search', this.form);
+    this.formGroup = this.page.locator('.oxd-input-group')
+    this.formLabel = this.page.locator('label')
   }
 
   /**
@@ -32,24 +36,24 @@ export class FormComponent extends BasePage {
   async fillForm(fields: FormField[]) {
     for (const field of fields) {
         // 1. Find the container for this specific form group
-        const group = this.page.locator('.oxd-input-group').filter({ hasText: field.label });
-        const input = group.locator('input');
+        const group = this.formGroup.filter({ 
+          has: this.page.getByText(field.label, { exact: true }) 
+        });
 
         switch (field.type) {
             case 'autocomplete':
                 // Click and Type to trigger the search
+                const input = group.locator('input');
                 await this.findElementAndClick(input);
                 await input.fill(''); 
                 await input.pressSequentially(field.value, { delay: 150 });
 
                 // Find the result in the dropdown that matches the text
                 // We use a broader selector for the dropdown list to work across pages
-                const listbox = this.page.locator('[role="listbox"], .oxd-autocomplete-dropdown');
+                const listbox = this.page.locator('[role="listbox"]');
                 await this.waitForElement(listbox);
 
-                const result = listbox.locator('div, [role="option"]')
-                    .filter({ hasText: field.value })
-                    .first();
+                const result = this.getOptionByName(field.value, this.page).first();
 
                 await this.waitForElement(result)
                 await this.findElementAndClick(result);
@@ -57,15 +61,17 @@ export class FormComponent extends BasePage {
 
             case 'dropdown':
                 // Standard OrangeHRM dropdown logic
-                await group.locator('.oxd-select-text').click();
-                const option = this.page.getByRole('option', { name: field.value, exact: true });
+                await this.findElementAndClick(group.locator('.oxd-select-wrapper'));
+                const option = this.getOptionByName(field.value, this.page);
                 await this.waitForElement(option)
                 await this.findElementAndClick(option);
                 break;
 
             default:
+              const textInput = group.locator('input').filter({ visible: true }).first();
+              if (await textInput.isVisible())
                 // Default 'input' behavior
-                await this.fillInput(input, field.value);
+                await this.fillInput(textInput, field.value);
                 break;
         }
     }
@@ -79,5 +85,11 @@ export class FormComponent extends BasePage {
     await this.fillForm(fields);
     await this.clickSearch();
   }
+
+  async getFieldError(labelName: string): Promise<Locator> {
+    return this.formGroup
+        .filter({ has: this.formLabel.filter({ hasText: labelName }) })
+        .locator('.oxd-input-field-error-message');
+ }
 
 }

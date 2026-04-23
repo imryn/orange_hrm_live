@@ -1,4 +1,5 @@
 const INDEX = "/web/index.php"
+const DOMAIN = "https://opensource-demo.orangehrmlive.com"
 
 export const FORM_TITLE_COLOR = 'rgb(100, 114, 140)'
 export const DEFAULTCOLOR = 'rgb(255, 123, 29)'
@@ -23,3 +24,5 @@ export const NAVBAR_LINKS = [
     {path: `${INDEX}/admin/viewSystemUsers`, text: "Admin"},
     {path: `${INDEX}/pim/viewPim`, text: "PIM"}
 ]
+
+export const SAVE_USER_MANAGEMENT_LINK = `${DOMAIN}${INDEX}/admin/saveSystemUser`

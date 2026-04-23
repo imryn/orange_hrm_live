@@ -2,11 +2,13 @@ import { Page } from '@playwright/test';
 import { LoginPage } from '../pages/loginPage';
 import { UserManagementPage } from '../pages/userManagementPage';
 import { BasePage } from '../pages/basePage';
+import { SaveSystemUsersPage } from '../pages/saveSystemUsersPage';
 
 export class PageFactory extends BasePage{
 
     private loginPageInstance?: LoginPage;
     private userManagementPageInstance?: UserManagementPage;
+    private saveSystemUsersPageInstance?: SaveSystemUsersPage;
 
      constructor(page: Page) {
         super(page);
@@ -18,5 +20,9 @@ export class PageFactory extends BasePage{
 
     get userManagementPage() {
         return this.userManagementPageInstance ??= new UserManagementPage(this.page);
+    }
+
+    get saveSystemUsersPage() {
+        return this.saveSystemUsersPageInstance ??= new SaveSystemUsersPage(this.page);
     }
 }

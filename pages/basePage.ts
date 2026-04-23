@@ -6,12 +6,14 @@ export class BasePage {
     readonly formLabels: Locator;
     readonly spanElement: string;
     readonly tableContainer: string;
+    readonly addButton: Locator;
 
     constructor(page: Page) {
         this.page = page;
         this.formLabels = this.page.locator('form .oxd-label');
         this.spanElement = 'span';
-        this.tableContainer = '.orangehrm-horizontal-padding'
+        this.tableContainer = '.orangehrm-horizontal-padding';
+        this.addButton = page.getByRole('button', { name: 'Add' });
     }
 
     /**
@@ -52,6 +54,10 @@ export class BasePage {
         await expect(this.page).toHaveURL(path);
     }
 
+    async waitForUrlToChange (path: string) {
+        await this.page.waitForURL(path);
+    }
+
    getElementByText(element_name: string, text: string): Locator {
       return this.page.locator(element_name, { hasText: text });
    }
@@ -75,6 +81,7 @@ export class BasePage {
 
         await Promise.all([
             this.findElementAndClick(locator),
+            this.waitForUrlToChange(expectedUrl),
             this.checkingNewUrl(expectedUrl),
             this.waitElementIsVisible(elementToWait)
         ]);
@@ -99,6 +106,19 @@ export class BasePage {
             container.getByText(element, { exact: true })
             ).toBeVisible();
         }
+    }
+
+    async clickAddButton(expectedUrl: string) {
+        await this.findElementAndClick(this.addButton);
+        await this.checkingNewUrl(expectedUrl);
+    }
+
+    getButtonByName(name: string, container: Locator | Page = this.page): Locator {
+        return container.getByRole('button', { name: name, exact: true });
+    }
+
+    getOptionByName(name: string, container: Locator | Page = this.page): Locator {
+        return container.getByRole('option', { name: name, exact: true });
     }
 }
 

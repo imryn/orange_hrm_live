@@ -41,8 +41,8 @@ export class UserManagementPage extends BasePage{
     await this.form.verifyButtons()
   }
 
-  async fillForm(data: FormField[]) {
-    await this.form.fillForm(data);
+  async getErrorFormField(labelName: string): Promise<Locator> {
+    return this.form.getFieldError(labelName);
   }
 
   async searchForUser(data: FormField[]) {
