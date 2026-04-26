@@ -48,7 +48,7 @@ export class UserManagementPage extends BasePage{
   async searchForUser(data: FormField[]) {
     await this.form.searchForUser(data);
 
-    await this.page.locator(`${this.tableContainer} span`).first().waitFor({ state: 'visible' });
+    await this.waitForElement(this.page.locator(`${this.tableContainer} span`).first());
 
     const count = await this.table.getResultCount();
     const rowData = count > 0 ? await this.table.getRowData(0) : {};
