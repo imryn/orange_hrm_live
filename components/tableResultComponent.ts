@@ -1,5 +1,7 @@
 import { Locator, Page } from "@playwright/test";
 import { BasePage } from "../pages/basePage";
+import { PopUpComponent } from '../components/popUpComponent';
+
 
 export class TableComponent extends BasePage {
 
@@ -9,15 +11,17 @@ export class TableComponent extends BasePage {
     private readonly tbodyContainer: Locator;
     private readonly headerCells: Locator;
     private readonly tableResultContainer: Locator;
+    public deletePopup: PopUpComponent;
 
     // Selectors based on your screenshot
-    constructor(page: Page) {
+    constructor(page: Page, deletePopup: PopUpComponent) {
         super(page);
         this.tbodyContainer = page.locator('.oxd-table-body');
         this.tableCell = '.oxd-table-cell';
         this.headerCells = page.locator('.oxd-table-header .oxd-table-header-cell');
         this.tableResultContainer = page.locator(this.tableContainer)
         this.tbodyRows = this.tbodyContainer.locator(this.TABLE_ROW_SELECTOR);
+        this.deletePopup = deletePopup;
     }
 
     async getResultCount(): Promise<number> {
@@ -77,6 +81,12 @@ export class TableComponent extends BasePage {
         // Use a web-first assertion to handle the search delay
         return RecordsMessage
     
+    }
+
+    async removeAnItemFromTable() {
+        this.findElementAndClick(this.getDynamicButton('i.oxd-icon.bi-trash'));
+        this.deletePopup.waitForPopUpToBeVisible();
+        this.deletePopup.clickDeleteButton();
     }
 
 }

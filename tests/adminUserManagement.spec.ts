@@ -15,6 +15,18 @@ async function verifySearchedUser(factory: PageFactory, userData: FormField[], e
        return { count, rowData };
 }
 
+async function addUser(factory: PageFactory) {
+        await factory.userManagementPage.clickAddButton(SAVE_USER_MANAGEMENT_LINK);
+       const userData = getNewAdminUserData()
+       await factory.saveSystemUsersPage.addUserAndSave(userData, NAVBAR_LINKS[0].path);
+       await factory.checkingNewUrl(NAVBAR_LINKS[0].path);
+       const { count, rowData }  = await verifySearchedUser(factory, userData, '(1) Record Found');
+       expect(count).toBe(1);
+       await factory.userManagementPage.verifyRecordsFound(rowData, userData);
+
+       return userData;
+}
+
 test.describe('verify user management page', () => {
     // This runs before every test in this block
     test.beforeEach(async ({ page, factory }) => {
@@ -48,13 +60,14 @@ test("searching with invalid Emplyee name in user management form", async ({ fac
  });
 
 test("add new user", async ({ factory }) => {
-       await factory.userManagementPage.clickAddButton(SAVE_USER_MANAGEMENT_LINK);
-       const userData = getNewAdminUserData()
-       await factory.saveSystemUsersPage.addUserAndSave(userData, NAVBAR_LINKS[0].path);
-       await factory.checkingNewUrl(NAVBAR_LINKS[0].path);
-       const { count, rowData }  = await verifySearchedUser(factory, userData, '(1) Record Found');
-       expect(count).toBe(1);
-       await factory.userManagementPage.verifyRecordsFound(rowData, userData);
+       await addUser(factory);
  });
+
+ test("delete a user", async ({ factory }) => {
+       const userData = await addUser(factory);
+       await factory.userManagementPage.deleteAUser();
+       const { count, rowData } = await verifySearchedUser(factory, userData, 'No Records Found');
+       expect(count).toBe(0);
+});
 
 });

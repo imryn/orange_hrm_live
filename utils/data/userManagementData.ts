@@ -20,7 +20,7 @@ export const getNewAdminUserData = () : FormField[] => [
   {label: "User Role", value: "Admin", type: 'dropdown'},
   {label: "Status", value: "Enabled", type: 'dropdown'},
   {label: "Password", value: "tesT!234"},
-  {label: "Employee Name", value: "Paul S Collings", type: 'autocomplete'},
+  {label: "Employee Name", value: "Peter Mac Anderson", type: 'autocomplete'},
   {label: "Username", value: getDynamicUsername()},
   {label: "Confirm Password", value: "tesT!234"}
 ];

@@ -6,6 +6,7 @@ import { USER_MANAGEMENT_FORM_LABELS, NAVBAR_LINKS } from '../utils/data/userMan
 import { FormField } from '../types/FormTypes';
 import { TableComponent } from '../components/tableResultComponent';
 import { verifyRowMatchesForm } from '../utils/formAssertions';
+import { PopUpComponent } from '../components/popUpComponent';
 
 
 export class UserManagementPage extends BasePage{
@@ -13,13 +14,15 @@ export class UserManagementPage extends BasePage{
     readonly pageFormTitle: Locator
     readonly form: FormComponent;
     public readonly table: TableComponent;
+    readonly popUp: PopUpComponent;
 
   constructor(page: Page) {
         super(page);
         this.navbarItems = page.locator(".oxd-topbar-body-nav-tab-item");
         this.pageFormTitle = this.page.getByRole('heading', { name: 'System Users', level: 5 });
         this.form = new FormComponent(this.page);
-        this.table = new TableComponent(this.page);
+        this.popUp = new PopUpComponent(this.page);
+        this.table = new TableComponent(this.page, this.popUp);
     }
 
   async verifyNavbarLinks() {
@@ -62,5 +65,9 @@ export class UserManagementPage extends BasePage{
 
   async verifyRecordsFound(rowData: Record<string, string>, searchData: FormField[]) {
       verifyRowMatchesForm(rowData, searchData);
+  }
+
+  async deleteAUser() {
+    this.table.removeAnItemFromTable();
   }
 }

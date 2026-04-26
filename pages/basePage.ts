@@ -21,10 +21,12 @@ export class BasePage {
      * @param page - The Playwright Page instance.
      * @param locator - The selector string to locate the element.
     */
-    async findElementAndClick (locator: Locator, options?: { timeout?: number }) {
+    async findElementAndClick (locator: Locator, options?: { timeout?: number; force?: boolean }) {
         const timeout = options?.timeout ?? 10000; // Default timeout of 10 seconds
+        const force = options?.force ?? false;
+
         try  {
-            await locator.click({timeout});
+            await locator.click({timeout, force});
         } catch (error) {
             await this.page.screenshot({ path: `error-${Date.now()}.png` });
             throw error
@@ -113,12 +115,16 @@ export class BasePage {
         await this.checkingNewUrl(expectedUrl);
     }
 
-    getButtonByName(name: string, container: Locator | Page = this.page): Locator {
-        return container.getByRole('button', { name: name, exact: true });
+    getButtonByName(nameValue: string | RegExp, container: Locator | Page = this.page): Locator {
+        return container.getByRole('button', { name: nameValue });
     }
 
-    getOptionByName(name: string, container: Locator | Page = this.page): Locator {
-        return container.getByRole('option', { name: name, exact: true });
+    getOptionByName(nameValue: string, container: Locator | Page = this.page): Locator {
+        return container.getByRole('option', { name: nameValue, exact: true });
+    }
+
+    getDynamicButton(childLocator: string): Locator {
+       return this.page.locator(`button:has(${childLocator})`)
     }
 }
 
